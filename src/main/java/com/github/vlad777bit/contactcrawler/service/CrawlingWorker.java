@@ -9,16 +9,13 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
-/**
- * Временная рабочая «заглушка».
- * На следующем этапе будет заменён реальным многопоточным краулером.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CrawlingWorker {
 
     private final CrawlingTaskRepository taskRepository;
+    private final CrawlerService crawlerService;
 
     public void runTask(CrawlingTask task) {
         try {
@@ -27,15 +24,13 @@ public class CrawlingWorker {
             task.setStartedAt(Instant.now());
             taskRepository.save(task);
 
-            // TODO: здесь будет вызов реального краулера
-            // Имитация небольшой работы
-            Thread.sleep(10);
+            crawlerService.crawl(task);
 
             task.setStatus(CrawlingTaskStatus.COMPLETED);
             task.setFinishedAt(Instant.now());
             taskRepository.save(task);
             log.info("Complete crawling task id={}", task.getId());
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
             failTask(task, "Interrupted");
         } catch (Exception e) {
