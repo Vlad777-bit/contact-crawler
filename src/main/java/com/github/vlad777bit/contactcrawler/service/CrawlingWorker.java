@@ -30,11 +30,9 @@ public class CrawlingWorker {
             task.setFinishedAt(Instant.now());
             taskRepository.save(task);
             log.info("Complete crawling task id={}", task.getId());
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-            failTask(task, "Interrupted");
         } catch (Exception e) {
             failTask(task, e.getMessage());
+            Thread.currentThread().interrupt(); // на случай, если нас прервали снаружи
         }
     }
 
