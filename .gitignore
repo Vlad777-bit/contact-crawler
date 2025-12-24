@@ -28,6 +28,8 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+reports/*.json
+reports/*.zip
 
 ### VS Code ###
 .vscode/
