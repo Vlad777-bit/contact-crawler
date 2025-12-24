@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.github.vlad777bit.contactcrawler.metrics.CrawlMetrics;
 
 @Slf4j
 @Service
@@ -27,6 +28,7 @@ public class CrawlerService {
     private final PageFetcher fetcher;
     private final ContactExtractionService extractor;
     private final ContactInfoRepository contactRepo;
+    private final CrawlMetrics metrics;
     private final Executor crawlerExecutor;
 
     /** минимальная задержка между запросами к одному хосту (вежливость) */
@@ -129,7 +131,8 @@ public class CrawlerService {
     @Transactional
     protected void persistBatch(List<ContactInfo> contacts) {
         if (contacts == null || contacts.isEmpty()) return;
-        // В этой версии пишем как есть (можно улучшить batched insert / dedup по репозиторию на следующих шагах)
+
         contactRepo.saveAll(contacts);
+        metrics.recordSavedRecords(contacts.size());
     }
 }
