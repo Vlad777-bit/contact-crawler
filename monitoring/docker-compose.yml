@@ -8,8 +8,18 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9090:9090"
-    networks:
-      - monitoring
+    environment:
+      # отключаем прокси внутри контейнера
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+      - FTP_PROXY=
+      - http_proxy=
+      - https_proxy=
+      - ftp_proxy=
+
+      # обязательно исключаем локальные адреса/сервисы
+      - NO_PROXY=localhost,127.0.0.1,::1,host.containers.internal,prometheus,grafana
+      - no_proxy=localhost,127.0.0.1,::1,host.containers.internal,prometheus,grafana
 
   grafana:
     image: grafana/grafana:main-ubuntu
